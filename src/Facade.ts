@@ -1,5 +1,3 @@
-import { DebugTool as debug } from "../native/DebugTool";
-
 
 /**
  * Facade是与核心层（Model,View,Controller）进行通信的唯一接口，
@@ -7,6 +5,9 @@ import { DebugTool as debug } from "../native/DebugTool";
  * Facade类在构造方法中已经包含了对这三类单例的构造
  */
 "use strict";
+
+import { IMediator, IFacade, IProxy, INotifier, INotification, IObserver } from "./IFacade";
+
 export class Facade implements IFacade {
 	private static _instance: Facade;
 	private _view: View;								
@@ -127,7 +128,7 @@ class View {
 	 */
 	public regist(md: IMediator) {
 		if (this._mediatorHash[md.name]) {
-			debug.throwError("重复注册mediator:" + md.name);
+			console.error("重复注册mediator:" + md.name);
 			return;
 		}
 		var facade = Facade.getInstance();
@@ -172,7 +173,7 @@ class Controlller {
 
 	public regist(cmd: string, cmdCls: Function) {
 		if (this._commondHash[cmd]) {
-			debug.throwError("重复注册Controller:" + cmd);
+			console.error("重复注册Controller:" + cmd);
 			return;
 		}
 		this._commondHash[cmd] = cmdCls;
@@ -210,7 +211,7 @@ class Model {
 
 	public regist(proxy: IProxy) {
 		if (this._proxyHash[proxy.name]) {
-			debug.throwError("重复注册model:" + proxy.name);
+			console.error("重复注册model:" + proxy.name);
 			return;
 		}
 		this._proxyHash[proxy.name] = proxy;
@@ -297,7 +298,7 @@ export class Observer implements IObserver {
 
 	static create(method: Function, caller: any): Observer {
 		if (!method || !caller) {
-			debug.throwError("不能生成方法或者caller为空的执行者");
+			console.error("不能生成方法或者caller为空的执行者");
 		}
 		var mid = method["$_mid"] ? method["$_mid"] : (this.MID++);
 		var cid = caller["$_cid"] ? caller["$_cid"] : (this.CID++);

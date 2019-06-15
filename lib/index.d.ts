@@ -1,6 +1,6 @@
 
 
- export interface IFacade {
+interface IFacade {
     /**
      * 注册显示管理对象
      * @param mediator 
@@ -21,14 +21,14 @@
     executeObsever(notification):void;
 }
 
- export interface INotifier {
+interface INotifier {
     sendNotification(namne: string, body?: any, type?: string);
 }
 
 /**
  * 观察者
  */
-export interface IObserver {
+interface IObserver {
     setTo(method: Function, caller: any);
     useCountAdd();
     execute(notificatrion: INotification);
@@ -38,7 +38,7 @@ export interface IObserver {
     recover();
 }
 
-export interface INotification {
+interface INotification {
     name: string;
     body: any;
     type: string;
@@ -47,7 +47,7 @@ export interface INotification {
 /**
  * 
  */
-export interface IMediator extends INotifier {
+interface IMediator extends INotifier {
     registCmd(cmd: string, method: Function);
     removeCmd(cmd: string, method?: Function);
     execute(notification: INotification);
@@ -57,12 +57,12 @@ export interface IMediator extends INotifier {
     name: string;
 }
 
-export interface ISimpleCommand extends INotifier {
+interface ISimpleCommand extends INotifier {
     execute(notification: INotification);
 }
 
 
-export interface IProxy extends INotifier {
+interface IProxy extends INotifier {
     setData(data: any);
     getData(): any;
     name: string;
