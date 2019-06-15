@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/taojiangcb/puremvc/issues"
   },
-  "homepage": "https://github.com/taojiangcb/puremvc#readme"
+  "homepage": "https://github.com/taojiangcb/puremvc#readme",
+  "devDependencies": {
+    "mocha": "^6.1.4"
+  }
 }
