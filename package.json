@@ -1,10 +1,11 @@
 {
-  "name": "puremvc_taojiang",
+  "name": "puremvc-ts",
   "version": "1.0.0",
   "description": "ts client",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --require ts-node/register test/**/*.ts"
   },
   "repository": {
     "type": "git",
@@ -17,6 +18,9 @@
   },
   "homepage": "https://github.com/taojiangcb/puremvc#readme",
   "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.7",
+    "chai": "^4.2.0",
     "mocha": "^6.1.4"
   }
 }
