@@ -4,13 +4,12 @@
  * 目的是简化开发复杂度。实际编码过程中，不需要手动实现这三类文件，
  * Facade类在构造方法中已经包含了对这三类单例的构造
  */
-"use strict";
 
 import { IMediator, IFacade, IProxy, INotifier, INotification, IObserver } from "./IFacade";
 
 export class Facade implements IFacade {
 	private static _instance: Facade;
-	private _view: View;								
+	private _view: View;
 	private _controller: Controlller;
 	private _model: Model;
 	private _obseverHash: any;
@@ -118,14 +117,11 @@ export class Facade implements IFacade {
  * 直接改变视图组件的状态。通过这样，就可以把视图和控制它的逻辑分离开来。
  */
 class View {
-	
-	private _mediatorHash: any;
-	constructor() { this._mediatorHash = {};}
 
-	/**
-	 * 注册中间媒介
-		 * @param md 
-	 */
+	private _mediatorHash: any;
+	constructor() { this._mediatorHash = {}; }
+
+
 	public regist(md: IMediator) {
 		if (this._mediatorHash[md.name]) {
 			console.error("重复注册mediator:" + md.name);
@@ -168,8 +164,9 @@ class View {
  */
 class Controlller {
 
+	//注册列表
 	private _commondHash: any;
-	constructor() { this._commondHash = {};}
+	constructor() { this._commondHash = {}; }
 
 	public regist(cmd: string, cmdCls: Function) {
 		if (this._commondHash[cmd]) {
@@ -218,7 +215,6 @@ class Model {
 		proxy.onRegist();
 	}
 
-
 	public remove(name: string): IProxy {
 		var proxy = this._proxyHash[name];
 		if (!proxy) return null;
@@ -247,35 +243,42 @@ class Notifier implements INotifier {
  * 因对消息的观察者
  */
 export class Observer implements IObserver {
-	private static _pool: Array<Observer>;		//池子暂时不用
-	
+	//池子暂时不用 暂时没有用到
+	private static _pool: Array<Observer>;
+	//缓存
 	private static _hash: any;
 
-	static MID: number = 1;						
+	//id种子
+	static MID: number = 1;
 	static CID: number = 1;
 
-	private _method: Function;				   //观察到被执行的方法
-	private _caller: any;						//执行方法的调用对象			
+	private _method: Function;				  //观察到被执行的方法
+	private _caller: any;								//执行方法的调用对象			
 	private _count: number = 0;					//引用的次数
-	constructor() {}
+	constructor() { }
 
+	//设置方法和 caller
 	setTo(method: Function, caller: any) {
 		this._method = method;
 		this._caller = caller;
 	}
 
+	//引用次数递增
 	useCountAdd() {
 		this._count++;
 	}
 
+	//执行
 	execute(notificatrion: INotification) {
 		this._method.call(this._caller, notificatrion);
 	}
-	
+
+	//对比执行者
 	compareNotifyContext(object: any): boolean {
 		return object === this._caller;
 	}
 
+	//回收掉这个对象
 	release() {
 		this._count--;
 		if (this._count <= 0) {
@@ -283,29 +286,33 @@ export class Observer implements IObserver {
 		}
 	}
 
+	//清理了
 	clear() {
 		this._method = null;
 		this._caller = null;
 	}
 
+	/**回收改对象到池子 */
 	recover() {
 		this.clear();
-		if (!Observer._pool) {
-			Observer._pool = [];
-		}
+		if (!Observer._pool) { Observer._pool = []; }
 		Observer._pool.push(this);
 	}
 
+	/**创建一个对象 */
 	static create(method: Function, caller: any): Observer {
 		if (!method || !caller) {
 			console.error("不能生成方法或者caller为空的执行者");
 		}
 		var mid = method["$_mid"] ? method["$_mid"] : (this.MID++);
 		var cid = caller["$_cid"] ? caller["$_cid"] : (this.CID++);
+		//先从缓存里占个位置
 		var result: Observer = this._hash && this._hash[mid + cid * 10000];
+
 		if (Observer._pool && Observer._pool.length > 0) {
 			result = Observer._pool.shift();
-		} else {
+		}
+		else {
 			result = new Observer();
 		}
 		result.setTo(method, caller);
@@ -314,6 +321,9 @@ export class Observer implements IObserver {
 	}
 }
 
+/**
+ * 消息
+ */
 export class Notification implements INotification {
 	private _name: string;
 	private _body: any;
@@ -338,10 +348,13 @@ export class Notification implements INotification {
 export class Mediator extends Notifier implements IMediator {
 	protected _name: string;
 	protected _cmdList: Array<string>;
-	protected _methodHash: any;									//观察者方法的对象池
+
+	//观察者方法的对象池
+	protected _methodHash: any;
 	protected _bReigsted: boolean = false;
 
-	protected _viewCompoment: any;								//view显示层的对象
+	//view显示层的对象
+	protected _viewCompoment: any;
 	constructor(name: string, viewCompoment?: any) {
 		super();
 		this._cmdList = [];
@@ -352,8 +365,8 @@ export class Mediator extends Notifier implements IMediator {
 
 	registCmd(cmd: string | string[], method: Function) {
 		var cmds: string[];
-		if (typeof cmd == "string") { cmds = [cmd];} 
-		else { cmds = cmd;}
+		if (typeof cmd == "string") { cmds = [cmd]; }
+		else { cmds = cmd; }
 		for (var i = 0; i < cmds.length; i++) {
 			cmd = cmds[i];
 			if (!this._methodHash[cmd]) {
@@ -405,16 +418,12 @@ export class Mediator extends Notifier implements IMediator {
 }
 
 export class SimpleCommand extends Notifier {
-	constructor() {
-		super();
-	}
-
-	public execute(notification: Notification) {
-
-	}
+	constructor() { super(); }
+	public execute(notification: Notification) { }
 }
 
 
+/** 代理 */
 export class Proxy extends Notifier implements IProxy {
 	protected _name: string;
 	protected _data: any;
@@ -438,7 +447,9 @@ export class Proxy extends Notifier implements IProxy {
 		return this._name;
 	}
 
-	public onRegist() { }
+	public onRegist() {
+
+	}
 
 	public onRemove() {
 		this._data = null;
