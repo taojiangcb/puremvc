@@ -1,8 +1,6 @@
 puremvc typescript 版本。。。
 
-<img src='origin_image001.jpg'></img>
-
-
+![image](./origin_image001.jpg)
 
 在 PureMVC 实现的经典 MVC 元设计模式中，Model、View 和 Controller 分别由一个单例类来管理，合称为核心层或核心角色。 另外，在 PureMVC 中还提供了一个单例类 —— Façade，主要作用是作为与核心层通信的唯一接口，简化开发复杂度。
 
